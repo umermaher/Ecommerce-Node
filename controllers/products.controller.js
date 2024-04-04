@@ -1,13 +1,15 @@
 const Product = require('../model/product.model.js');
+const apiResponse = require('../utils/api_response.js')
 
 const createProduct = async (req, res) => {
 
     try {
         const product = await Product.create(req.body);
-        res.status(200).json(product);
+        const response = apiResponse(200, 'Product created successfully', product);
+        res.status(200).json(response);
     } catch (error) {
-        res.status(200).json(
-            { message: error.message }
+        res.status(500).json(
+            apiResponse(500, error.message)
         );
     }
 
@@ -17,10 +19,11 @@ const getProducts = async (req, res) => {
     
     try {
         const products = await Product.find({});
-        res.status(200).json(products);
+        const response = apiResponse(200, 'Products fetched successfully', products);
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json(
-            { message: error.message }
+            apiResponse(500, error.message)
         );
     }
 
@@ -33,13 +36,14 @@ const getProduct = async (req, res) => {
        const product = await Product.findById(id);
        if(!product) {
            return res.status(404).json(
-               { message: "Product not found!" }
+               apiResponse(404, 'Product not found!')
            );
        }
-       res.status(200).json(product);
+       const response = apiResponse(200, 'Product Fetched successfully!', product);
+       res.status(200).json(response);
     } catch (error) {
-       res.status(200).json(
-           { message: error.message }
+       res.status(500).json(
+        apiResponse(500, error.message)
        );
     }
 
@@ -52,16 +56,16 @@ const updateProduct = async (req, res) => {
 
         if(!product) {
             return res.status(404).json(
-                { message: "Product not found!" }
+                apiResponse(404, 'Product not found!')
             );
         }
 
         const updateProduct = await Product.findById(id);
-        res.status(200).json(updateProduct);
-
+        const response = apiResponse(200, 'Product Updated successfully!', updateProduct);
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json(
-            { message: error.message }
+            apiResponse(500, error.message)
         );
     }
 }
@@ -72,17 +76,16 @@ const deleteProduct = async (req, res) => {
         const product = await Product.findByIdAndDelete(id)
 
         if(!product) {
-            return req.status(404).json(
-                { message: "Product not found!" }
+            return res.status(404).json(
+                apiResponse(404, 'Product not found!')
             );
         }
 
-        res.status(200).json(
-            { message: "Product deleted Successfully!" }
-        )
+        const response = apiResponse(200, 'Product Deleted successfully!');
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json(
-            { message: error.message }
+            apiResponse(500, error.message)
         );
     }
 }
