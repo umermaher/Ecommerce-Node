@@ -48,7 +48,6 @@ const getProduct = async (req, res) => {
                apiResponse(StatusCode.NOT_FOUND, 'Product not found!')
            );
        }
-      
        const response = apiResponse(StatusCode.OK, 'Product Fetched successfully!', product);
        res.status(StatusCode.OK).json(response);
     

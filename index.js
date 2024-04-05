@@ -4,6 +4,7 @@ const app = express();
 const productRoute = require('./routes/products.route.js')
 const userRoute = require('./routes/users.route.js')
 const dotenv = require("dotenv");
+const userAuthentication = require("./middlewares/authentication.js")
 
 dotenv.config()
 
@@ -11,7 +12,7 @@ dotenv.config()
 app.use(express.json());
 
 //routes
-app.use("/api/products", productRoute);
+app.use("/api/products", userAuthentication, productRoute);
 app.use("/api/user", userRoute);
 
 // Connecting to database

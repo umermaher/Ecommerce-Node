@@ -2,6 +2,7 @@ const User = require('../model/user.model.js');
 const apiResponse = require('../utils/api_response.js');
 const StatusCode  = require('../utils/status_code.js');
 const bcrypt = require('bcryptjs');
+const { generateToken } = require('../services/auth.js');
 
 const signUp = async (req, res) => {
     
@@ -62,9 +63,13 @@ const signIn = async (req, res) => {
             );
         }
 
+        const token = generateToken(user._id);
+
         const responseUser = user.toJSON();
         delete responseUser.password; // Remove the password field to send object to client
         
+        responseUser.token = token;
+
         const response = apiResponse(
             StatusCode.OK, 'User Logged in successfully!', responseUser
         );
