@@ -1,10 +1,12 @@
 const User = require('../model/user.model.js');
 const apiResponse = require('../utils/api_response.js');
 const StatusCode  = require('../utils/status_code.js');
+const bcrypt = require('bcryptjs');
 
 const signUp = async (req, res) => {
     
     try {
+       
         const { email } = req.body;
         if(await isUserExists(email)) {
             return res.status(StatusCode.UNPROCESSABLE_ENTITY).json(
@@ -24,6 +26,7 @@ const signUp = async (req, res) => {
             StatusCode.OK, 'User created successfully!', responseUser
         );
         res.status(StatusCode.OK).json(response);
+    
     } catch (error) {
         res.status(StatusCode.INTERNAL_SERVER_ERROR).json(
             apiResponse(
@@ -38,19 +41,27 @@ const signIn = async (req, res) => {
     
     try {
         const { email, password } = req.body;
-        const user = await User.findOne( {
-            email, password
-        } );
+        const user = await User.findOne( { email } );
 
-        if(!user) {
-            return res.status(StatusCode.CONFLICTED).json(
+        if (!user) {
+            return res.status(StatusCode.NOT_FOUND).json(
                 apiResponse(
-                    StatusCode.CONFLICTED,
-                    'Invalid email or password!'
+                    StatusCode.NOT_FOUND,
+                    'User with this email not found'
                 )
             );
         }
         
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(StatusCode.UNAUTHORIZED).json(
+                apiResponse(
+                    StatusCode.UNAUTHORIZED,
+                    'Incorrect Password!'
+                )
+            );
+        }
+
         const responseUser = user.toJSON();
         delete responseUser.password; // Remove the password field to send object to client
         
