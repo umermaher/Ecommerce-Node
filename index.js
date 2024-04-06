@@ -4,12 +4,13 @@ const app = express();
 const productRoute = require('./routes/products.route.js')
 const userRoute = require('./routes/users.route.js')
 const dotenv = require("dotenv");
-const userAuthentication = require("./middlewares/authentication.js")
+const userAuthentication = require("./middlewares/authentication.js");
 
 dotenv.config()
 
 // middleware
 app.use(express.json());
+// app.use(express.urlencoded());
 
 //routes
 app.use("/api/products", userAuthentication, productRoute);
