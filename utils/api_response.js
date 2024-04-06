@@ -1,4 +1,4 @@
-const apiResponse = (statusCode, message, body = {}, errors = {}, exception = {}) => {
+const response = (statusCode, message, body = {}, errors = {}, exception = {}) => {
     return {
         statusCode,
         message,
@@ -8,4 +8,10 @@ const apiResponse = (statusCode, message, body = {}, errors = {}, exception = {}
     };
 };
 
-module.exports = apiResponse
+function apiResponse(res, statusCode, message, body = {}, errors = {}, exception = {}) {
+    return res.status(statusCode).json(
+        response(statusCode, message, body, errors, exception)
+    );
+}
+
+module.exports = apiResponse;

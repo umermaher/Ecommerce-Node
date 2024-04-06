@@ -5,8 +5,8 @@ const apiResponse = require('../utils/api_response.js');
 const authenitcation = (req, res, next) => {
     const user = authenticateUser(req.headers.authorization);
     if (!user) {
-        return res.status(StatusCode.UNAUTHORIZED).json(
-            apiResponse(StatusCode.UNAUTHORIZED, 'Unauthenticated user!')
+        return apiResponse(
+            res, StatusCode.UNAUTHORIZED, 'Unauthenticated user!'
         );
     }
     req.userId = user.id;

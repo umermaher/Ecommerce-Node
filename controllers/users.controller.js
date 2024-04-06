@@ -10,12 +10,11 @@ const signUp = async (req, res) => {
        
         const { email } = req.body;
         if(await isUserExists(email)) {
-            return res.status(StatusCode.UNPROCESSABLE_ENTITY).json(
-                apiResponse(
-                    StatusCode.UNPROCESSABLE_ENTITY,
-                    'User with this email already exists!'
-                )
-            )
+            return apiResponse(
+                res,
+                StatusCode.UNPROCESSABLE_ENTITY, 
+                'User with this email already exists!'
+            );
         }
 
         const user = await User.create(req.body);
@@ -23,16 +22,13 @@ const signUp = async (req, res) => {
         const responseUser = user.toJSON();
         delete responseUser.password; // Remove the password field to send object to client
         
-        const response = apiResponse(
-            StatusCode.OK, 'User created successfully!', responseUser
+        apiResponse(
+            res, StatusCode.OK, 'User created successfully!', responseUser
         );
-        res.status(StatusCode.OK).json(response);
-    
+
     } catch (error) {
-        res.status(StatusCode.INTERNAL_SERVER_ERROR).json(
-            apiResponse(
-                StatusCode.INTERNAL_SERVER_ERROR, error.message
-            )
+        apiResponse(
+            res, StatusCode.INTERNAL_SERVER_ERROR, error.message
         );
     }
 
@@ -45,21 +41,19 @@ const signIn = async (req, res) => {
         const user = await User.findOne( { email } );
 
         if (!user) {
-            return res.status(StatusCode.NOT_FOUND).json(
-                apiResponse(
-                    StatusCode.NOT_FOUND,
-                    'User with this email not found'
-                )
+            return apiResponse(
+                res,
+                StatusCode.NOT_FOUND,
+                'User with this email not found'
             );
         }
         
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(StatusCode.UNAUTHORIZED).json(
-                apiResponse(
-                    StatusCode.UNAUTHORIZED,
-                    'Incorrect Password!'
-                )
+            return apiResponse(
+                res,
+                StatusCode.UNAUTHORIZED,
+                'Incorrect Password!'
             );
         }
 
@@ -70,15 +64,12 @@ const signIn = async (req, res) => {
         
         responseUser.token = token;
 
-        const response = apiResponse(
-            StatusCode.OK, 'User Logged in successfully!', responseUser
+        apiResponse(
+            res, StatusCode.OK, 'User Logged in successfully!', responseUser
         );
-        res.status(StatusCode.OK).json(response);
     } catch (error) {
-        res.status(StatusCode.INTERNAL_SERVER_ERROR).json(
-            apiResponse(
-                StatusCode.INTERNAL_SERVER_ERROR, error.message
-            )
+        apiResponse(
+            res, StatusCode.INTERNAL_SERVER_ERROR, error.message
         );
     }
 
