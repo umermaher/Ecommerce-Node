@@ -21,7 +21,7 @@ const createProduct = async (req, res) => {
 
 }
 
-const getProducts = async (req, res) => {
+const getProducts2 = async (req, res) => {
     
     try {
         
@@ -39,6 +39,41 @@ const getProducts = async (req, res) => {
     }
 
 }
+
+const getProducts = async (req, res) => {
+    try {
+        // Extract query parameters for pagination
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10; // Default limit of 10 items per page
+
+        // Calculate skip value to skip records based on the page number
+        const skip = (page - 1) * limit;
+
+        // Query products with pagination and populate createdBy field
+        const products = await Product.find({})
+            .skip(skip)
+            .limit(limit)
+            .populate('createdBy', '-password -__v');
+
+        // Count total number of products
+        const totalCount = await Product.countDocuments();
+
+        // Prepare response object with pagination metadata
+        const response = {
+            currentPage: page,
+            totalPages: Math.ceil(totalCount / limit),
+            totalProducts: totalCount,
+            products: products
+        };
+
+        // Send response
+        apiResponse(res, StatusCode.OK, 'Products fetched successfully', response);
+    } catch (error) {
+        // Handle errors
+        apiResponse(res, StatusCode.INTERNAL_SERVER_ERROR, error.message);
+    }
+};
+
 
 const getProduct = async (req, res) => {
     
